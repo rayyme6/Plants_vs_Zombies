@@ -5,9 +5,9 @@
 class Peashooter : public Plant
 {
 private:
-	sf::Texture peashooterTexture;
-	sf::Sprite peashooterSprite;
+	
 public:
+	Peashooter();
 	void setImage();
 	void drawPeashooter(sf::RenderWindow& window);
 	void spawnPeashooter(int x, int y);

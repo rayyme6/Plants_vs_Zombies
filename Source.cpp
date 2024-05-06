@@ -1,9 +1,8 @@
 ﻿#include <SFML/Graphics.hpp>
 #include <ctime>
 #include "Peashooter.h"
+#include "Plant_Factory.h"
 using namespace sf;
-using namespace std;
-
 
 struct coordinats {
 	int x;
@@ -45,7 +44,7 @@ int numPeashooters = 0; // Track the number of placed peashooters
 
 int main()
 {
-
+	Plant_Factory plantFactory; // plant factory
 	pee.setImage();
 	//Create a window, n*n
 	RenderWindow window(VideoMode(1200, 700), "Plants Vs Zombies");
@@ -66,6 +65,7 @@ int main()
 	const int COLS = 9;
 
 	bool FIELD_GAME_STATUS[ROWS][COLS];
+	Plant* plants[ROWS][COLS]; // plants array
 
 	for (int i = 0; i < ROWS; i++) {
 		for (int j = 0; j < COLS; j++) {
@@ -98,11 +98,13 @@ int main()
 			if (event.type == sf::Event::MouseButtonPressed) {
 				int row = (event.mouseButton.y - 80) / 108; // Calculate the row
 				int col = (event.mouseButton.x - 200) / 108; // Calculate the column
-
+				
 				// Make sure the clicked position is inside the grid
 				if (row >= 0 && row < ROWS && col >= 0 && col < COLS && FIELD_GAME_STATUS[row][col]) {
 					// Spawn the sprite at the clicked position
-					pee.spawnPeashooter(event.mouseButton.x, event.mouseButton.y);
+					plants[row][col] = plantFactory.newPeashooter();
+					plants[row][col]->setImage();
+					plants[row][col]->spawn(col * 80 + 250, row * 100 + 80);
 
 					// Store the position of the placed peashooter
 					peashooterPositions[numPeashooters].x = event.mouseButton.x;
@@ -124,9 +126,15 @@ int main()
 		createBack(window);
 		createMap(window);
 
-		for (int i = 0; i < numPeashooters; ++i) {
-			pee.spawnPeashooter(peashooterPositions[i].x, peashooterPositions[i].y);
-			pee.drawPeashooter(window);
+		//for (int i = 0; i < numPeashooters; ++i) {
+		//	pee.spawnPeashooter(peashooterPositions[i].x, peashooterPositions[i].y);
+		//	pee.drawPeashooter(window);
+		//}
+		for (int i = 0; i < ROWS; i++) {
+			for (int j = 0; j < COLS; j++) {
+				if (FIELD_GAME_STATUS[i][j]) continue;
+				window.draw(plants[i][j]->getImage());
+			}
 		}
 
 		window.display();

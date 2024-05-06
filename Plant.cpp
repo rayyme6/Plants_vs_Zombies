@@ -80,6 +80,11 @@ void Plant::setpeaX_position(int pX)
 	peaX_position = pX;
 }
 
+sf::Sprite& Plant::getImage()
+{
+	return sprite;
+}
+
 void Plant::deadPlant()
 {
 	isAvailable = false;
@@ -90,3 +95,9 @@ bool Plant::isOnGrid()
 	return isAvailable;
 }
 
+void Plant::spawn(int x, int y)
+{
+	// Calculate the position of the sprite so that its center is at (x, y)
+	sprite.setPosition(x - sprite.getGlobalBounds().width / 2,
+		y - sprite.getGlobalBounds().height / 2);
+}

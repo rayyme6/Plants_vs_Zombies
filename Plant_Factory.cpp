@@ -10,6 +10,10 @@
 //Set the plants created to zero
 int Plant_Factory::plant_count = 0;
 
+Plant_Factory::Plant_Factory()
+{
+}
+
 //Make a new Peashooter and increase the plant count
 Plant* Plant_Factory::newPeashooter()
 {

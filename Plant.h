@@ -18,6 +18,8 @@ protected:
 	bool isAvailable; //Check if plant is available
 	int peaX_position; //Track the position of the Pea
 	int cost; //Cost of each of Plant
+	sf::Texture texture;
+	sf::Sprite sprite;
 	//Clock cooldown; //Cooldown time of Plant
 public:
 	Plant();
@@ -37,7 +39,7 @@ public:
 	void setattack_zombie(bool az);
 	void setisAvailable(bool iA);
 	void setpeaX_position(int pX);
-
+	sf::Sprite& getImage() ;
 	virtual void setImage() = 0;
 	virtual void peaShootpoint() = 0;
 	virtual void setDx(double d) = 0;
@@ -54,5 +56,6 @@ public:
 	
 	void deadPlant();
 	bool isOnGrid();
+	void spawn(int x, int y);
 };
 

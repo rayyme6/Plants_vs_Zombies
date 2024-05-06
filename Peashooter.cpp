@@ -1,28 +1,45 @@
 #include "Peashooter.h"
 
-void Peashooter::setImage()
+Peashooter::Peashooter()
 {
-	if (!peashooterTexture.loadFromFile("Images/peashooter_sprite.png"))
+	if (!texture.loadFromFile("Images/peashooter_sprite.png"))
 	{
 		std::cerr << "Error in loading peashooter file. Terminating...\n";
 		// You might want to add additional error handling here, like returning or throwing an exception.
 		// For now, let's just return without setting the texture.
 		return;
 	}
-	peashooterSprite.setTexture(peashooterTexture);
-	peashooterSprite.setTextureRect(sf::IntRect(0, 0, 120, 120));
+	sprite.setTexture(texture);
+	sprite.setTextureRect(sf::IntRect(0, 0, 120, 120));
 }
+
+void Peashooter::setImage()
+{
+}
+
+//void Peashooter::setImage()
+//{
+//	if (!texture.loadFromFile("Images/peashooter_sprite.png"))
+//	{
+//		std::cerr << "Error in loading peashooter file. Terminating...\n";
+//		// You might want to add additional error handling here, like returning or throwing an exception.
+//		// For now, let's just return without setting the texture.
+//		return;
+//	}
+//	sprite.setTexture(texture);
+//	sprite.setTextureRect(sf::IntRect(0, 0, 120, 120));
+//}
 
 void Peashooter::drawPeashooter(sf::RenderWindow& window)
 {
-		window.draw(peashooterSprite);
+		window.draw(sprite);
 }
 
 void Peashooter::spawnPeashooter(int x, int y)
 {
 	// Calculate the position of the sprite so that its center is at (x, y)
-	peashooterSprite.setPosition(x - peashooterSprite.getGlobalBounds().width / 2,
-		y - peashooterSprite.getGlobalBounds().height / 2);
+	sprite.setPosition(x - sprite.getGlobalBounds().width / 2,
+		y - sprite.getGlobalBounds().height / 2);
 }
 
 void Peashooter::peaShootpoint()
