@@ -3,6 +3,8 @@
 
 class CherryBomb : public Plant
 {
+public:
+	CherryBomb();
 	void setImage();
 	void peaShootpoint();
 	void setDx(double d);

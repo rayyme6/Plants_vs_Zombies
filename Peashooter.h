@@ -1,5 +1,6 @@
 #pragma once
 #include "Plant.h"
+#include "Pea.h"
 #include "SFML/Graphics.hpp"
 
 class Peashooter : public Plant
@@ -21,5 +22,10 @@ public:
 	bool needToAttack(bool a);
 	int getCost();
 	void setCost(int c);
+	//// New member function to check if the peashooter can shoot
+	//bool canShootPea();
+
+	//// New member function to shoot a pea
+	//Pea shootPea();
 };
 

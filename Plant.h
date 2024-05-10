@@ -3,6 +3,7 @@
 #include "SFML/Graphics.hpp"
 #include "SFML/Window.hpp"
 #include "Time.h"
+#include "Pea.h"
 #include <ctime>
 using namespace std;
 class Plant
@@ -20,6 +21,7 @@ protected:
 	int cost; //Cost of each of Plant
 	sf::Texture texture;
 	sf::Sprite sprite;
+	sf::Clock shootingtimer;
 	//Clock cooldown; //Cooldown time of Plant
 public:
 	Plant();
@@ -52,10 +54,16 @@ public:
 	virtual bool needToAttack(bool a) = 0;
 	virtual int getCost() = 0;
 	virtual void setCost(int c) = 0;
+	//virtual bool canShootPea() = 0;
+
+	//// New member function to shoot a pea
+	//virtual  Pea shootPea() = 0;
 	//virtual void drawPlant(sf::RenderWindow& window) = 0;
 	
 	void deadPlant();
 	bool isOnGrid();
 	void spawn(int x, int y);
+
+
 };
 

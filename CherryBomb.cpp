@@ -1,14 +1,21 @@
 #include "CherryBomb.h"
 
-void CherryBomb::setImage()
+CherryBomb::CherryBomb()
 {
-	//will set sprite later
+	if (!texture.loadFromFile("Images/cherrybomb_sprite.png"))
+	{
+		std::cerr << "Error in loading peashooter file. Terminating...\n";
+		// You might want to add additional error handling here, like returning or throwing an exception.
+		// For now, let's just return without setting the texture.
+		return;
+	}
+	sprite.setTexture(texture);
+	sprite.setTextureRect(sf::IntRect(0, 0, 572, 439));
 }
 
-//void CherryBomb::drawPlant(sf::RenderWindow& window)
-//{
-//	//window.draw(peashooterSprite);
-//}
+void CherryBomb::setImage()
+{
+}
 
 void CherryBomb::peaShootpoint()
 {

@@ -2,6 +2,10 @@
 #include <ctime>
 #include "Peashooter.h"
 #include "Plant_Factory.h"
+#include "SimpleZombie.h"
+#include "FootballZombie.h"
+#include "DancingZombie.h"
+#include "FlyingZombie.h"
 using namespace sf;
 
 struct coordinats {
@@ -38,14 +42,17 @@ void createMap(RenderWindow& window) {
 	window.draw(s_map);
 }
 Peashooter pee;
-const int MAX_PEASHOOTERS = 100; // Maximum number of peashooters
-coordinats peashooterPositions[MAX_PEASHOOTERS]; // Store positions of placed peashooters
+const int MAX_PLANTS = 100; // Maximum number of peashooters
+coordinats peashooterPositions[MAX_PLANTS]; // Store positions of placed peashooters
+coordinats cherrybombPositions[MAX_PLANTS];
 int numPeashooters = 0; // Track the number of placed peashooters
+int numCherrybombs = 0; // Track the number of placed cherrybombs
 
 int main()
 {
 	Plant_Factory plantFactory; // plant factory
-	pee.setImage();
+	std::srand(static_cast<unsigned int>(std::time(0)));
+
 	//Create a window, n*n
 	RenderWindow window(VideoMode(1200, 700), "Plants Vs Zombies");
 	//Game icon
@@ -56,6 +63,25 @@ int main()
 	}
 	window.setIcon(32, 32, icon.getPixelsPtr());
 
+
+	// Instantiate SimpleZombie
+	SimpleZombie simpleZombie;
+	simpleZombie.setImage("../Images/simple.png");
+	simpleZombie.initializeRandomPosition(/*1200, 700*/);
+
+	// Instantiate FootballZombie
+	FootballZombie footballZombie;
+	footballZombie.setImage("../Images/fooball.png");
+	footballZombie.initializeRandomPosition(/*1200, 700*/);
+
+	DancingZombie dancingZombie;
+	dancingZombie.setImage("../Images/dancing.png");
+	dancingZombie.initializeRandomPosition(/*1200, 700*/);
+
+	// Instantiate FlyingZombie directly
+	FlyingZombie flyingZombie;
+	flyingZombie.setImage("../Images/flying.png");
+	flyingZombie.initializeRandomPosition(/*1200, 700*/);
 	///////////////////////////////////////
 
 	//Game field (5*9)
@@ -74,9 +100,6 @@ int main()
 	}
 
 	Clock timeMoney;
-
-
-
 	Clock clock;
 
 	sf::FloatRect clickArea(0, 0, 1200, 700);
@@ -104,7 +127,8 @@ int main()
 					// Spawn the sprite at the clicked position
 					plants[row][col] = plantFactory.newPeashooter();
 					plants[row][col]->setImage();
-					plants[row][col]->spawn(col * 80 + 250, row * 100 + 80);
+					plants[row][col]->spawn(col * 80 + 231, row * 100 + 180);
+					cout << "Row: " << row << ", Column: " << col << endl;
 
 					// Store the position of the placed peashooter
 					peashooterPositions[numPeashooters].x = event.mouseButton.x;
@@ -112,19 +136,31 @@ int main()
 					numPeashooters++;
 
 					// Ensure we don't exceed the maximum number of peashooters
-					if (numPeashooters >= MAX_PEASHOOTERS) {
+					if (numPeashooters >= MAX_PLANTS) {
 						return 1;
 					}
 
 					// Update the grid status
 					FIELD_GAME_STATUS[row][col] = false;
+
+					//if (plants[row][col]->canShootPea() && clock.getElapsedTime().asSeconds() >= 2) {
+					//	// Shoot a pea
+					//	Pea pea = plants[row][col]->shootPea();
+					//	// Add the pea to your game entities or draw it directly
+					//	// Reset the shooting timer
+					//	clock.restart();
+					//}
 				}
 			}
 		}
 
+		sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
+		std::cout << "Mouse Position: (" << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
+		window.clear();
+
 		//Create a background
 		createBack(window);
-		createMap(window);
+		/*createMap(window);*/
 
 		//for (int i = 0; i < numPeashooters; ++i) {
 		//	pee.spawnPeashooter(peashooterPositions[i].x, peashooterPositions[i].y);
@@ -136,6 +172,13 @@ int main()
 				window.draw(plants[i][j]->getImage());
 			}
 		}
+
+		// Update and draw the zombies
+		simpleZombie.update(window, time);
+		footballZombie.update(window, time);
+		dancingZombie.update(window, time);
+		flyingZombie.update(window, time);
+
 
 		window.display();
 	}

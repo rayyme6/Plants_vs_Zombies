@@ -99,3 +99,15 @@ void Peashooter::setCost(int c = 100)
 {
 	cost = c;
 }
+
+//bool Peashooter::canShootPea(){
+//	return attack_zombie;
+//}
+//
+//Pea Peashooter::shootPea(){
+//	Pea pea;
+//	pea.setPosition(sprite.getPosition().x + sprite.getGlobalBounds().width,
+//		sprite.getPosition().y + sprite.getGlobalBounds().height / 2);
+//	pea.setDx(0.5); // Set the speed of the pea
+//	return pea;
+//}

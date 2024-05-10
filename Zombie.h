@@ -1,24 +1,24 @@
 #pragma once
-#include <iostream>
-#include "SFML/Graphics.hpp"
-#include "SFML/Window.hpp"
-#include "Time.h"
-#include <ctime>
-using namespace std;
+#include <SFML/Graphics.hpp>
+#include <string>
 
 class Zombie {
 protected:
-    int x_position;
-    int y_position;
+    sf::Sprite sprite;
+    sf::Texture texture;
+    int xPosition;
+    int yPosition;
     int speed;
     int health;
     int damage;
     bool isMoving;
 
-
 public:
-    Zombie(); // Constructor
-    virtual ~Zombie() {} // Virtual destructor
+    // Constructor
+    Zombie();
+
+    // Virtual destructor
+    virtual ~Zombie();
 
     // Getters
     int getXPosition() const;
@@ -30,12 +30,21 @@ public:
     // Setters
     void setXPosition(int x);
     void setYPosition(int y);
+    void setHealth(int h);
+    void setDamage(int d);
+    void setIsMoving(bool moving);
 
-    // Virtual methods for behavior
+    // Set texture from a file path
+    void setTexture(const std::string& file);
+
+    // Set sprite position
+    void setPosition(float x, float y);
+
+    // Retrieve the current sprite
+    const sf::Sprite& getSprite() const;
+
+    // Pure virtual methods for behavior
     virtual void move() = 0;
     virtual void attack() = 0;
     virtual void update(sf::RenderWindow& window, double time) = 0;
-    virtual void setHealth(int h) = 0;
-    virtual void setDamage(int d) = 0;
-    virtual void setIsMoving(bool moving) = 0;
 };

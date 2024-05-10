@@ -90,10 +90,10 @@
     <ClCompile Include="DancingZombie.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DolphinRiderZombie.cpp">
+    <ClCompile Include="GameBoard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameBoard.cpp">
+    <ClCompile Include="Pea.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -170,10 +170,10 @@
     <ClInclude Include="DancingZombie.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DolphinRiderZombie.h">
+    <ClInclude Include="GameBoard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameBoard.h">
+    <ClInclude Include="Pea.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
