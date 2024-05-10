@@ -1,9 +1,22 @@
 #include "SnowPea.h"
 
-void SnowPea::setImage()
+SnowPea::SnowPea()
 {
-	//set sprite
+	if (!texture.loadFromFile("Images/snowpea_sprite.png"))
+	{
+		std::cerr << "Error in loading peashooter file. Terminating...\n";
+		// You might want to add additional error handling here, like returning or throwing an exception.
+		// For now, let's just return without setting the texture.
+		return;
+	}
+	sprite.setTexture(texture);
+	sprite.setTextureRect(sf::IntRect(0, 0, 572, 439));
 }
+//
+//void SnowPea::setImage()
+//{
+//	//set sprite
+//}
 
 //void SnowPea::drawPlant(sf::RenderWindow& window)
 //{

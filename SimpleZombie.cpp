@@ -23,7 +23,7 @@ void SimpleZombie::initializeRandomPosition(/*int windowWidth, int windowHeight*
 }
 // Set the image for the zombie
 void SimpleZombie::setImage(const std::string& file) {
-    if (!texture.loadFromFile("../Images/simple.png")) {
+    if (!texture.loadFromFile("Images/simple.png")) {
         std::cerr << "Error: Failed to load zombie texture file. Terminating...\n";
         return;
     }

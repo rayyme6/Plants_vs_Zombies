@@ -42,7 +42,7 @@ public:
 	void setisAvailable(bool iA);
 	void setpeaX_position(int pX);
 	sf::Sprite& getImage() ;
-	virtual void setImage() = 0;
+	//virtual void setImage() = 0;
 	virtual void peaShootpoint() = 0;
 	virtual void setDx(double d) = 0;
 	virtual void updatePea(sf::RenderWindow& window, double time) = 0;

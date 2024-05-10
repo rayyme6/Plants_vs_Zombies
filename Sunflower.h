@@ -1,15 +1,16 @@
 #pragma once
 #include "Plant.h"
+#include "SFML/Graphics.hpp"
 
 class Sunflower : public Plant
 {
 private:
-	Time cooldown;
+	 sf::Clock cooldown;
 public:
 	Sunflower();
 	void generateSun();
 	//void drawPlant(sf::RenderWindow& window);
-	void setImage();
+	//void setImage();
 	void peaShootpoint();
 	void setDx(double d);
 	void updatePea(sf::RenderWindow& window, double time);

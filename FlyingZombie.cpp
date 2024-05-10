@@ -13,7 +13,7 @@ FlyingZombie::FlyingZombie() : hitPoints(2), speed(1.2f), directionX(-1.0f) {
 
 // Set the image for the flying zombie
 void FlyingZombie::setImage(const std::string& file) {
-    if (!texture.loadFromFile("../Images/flying.png")) {
+    if (!texture.loadFromFile("Images/flying.png")) {
         std::cerr << "Error: Failed to load flying zombie texture file. Terminating...\n";
         return;
     }

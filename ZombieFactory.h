@@ -17,7 +17,6 @@ public:
     static Zombie* newFootballZombie();
     static Zombie* newFlyingZombie();
     static Zombie* newDancingZombie();
-    static Zombie* newDolphinRiderZombie();
 
     static int getZombieCount();
 

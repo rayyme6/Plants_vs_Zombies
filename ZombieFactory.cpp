@@ -27,11 +27,6 @@ Zombie* ZombieFactory::newDancingZombie() {
     return new DancingZombie();
 }
 
-Zombie* ZombieFactory::newDolphinRiderZombie() {
-    zombie_count++;
-    return new DolphinRiderZombie();
-}
-
 // Get the total count of created zombies
 int ZombieFactory::getZombieCount() {
     return zombie_count;
@@ -73,10 +68,6 @@ void ZombieFactory::generateRandomZombies(int maxZombies, int minIntervalMs, int
         case 4:
             newZombie = newDancingZombie();
             std::cout << "Created a DancingZombie.\n";
-            break;
-        case 5:
-            newZombie = newDolphinRiderZombie();
-            std::cout << "Created a DolphinRiderZombie.\n";
             break;
         default:
             std::cerr << "Unknown zombie type.\n";

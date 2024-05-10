@@ -1,9 +1,22 @@
 #include "Wallnut.h"
 
-void Wallnut::setImage()
+Wallnut::Wallnut()
 {
-	//set sprite
+	if (!texture.loadFromFile("Images/wallnut_sprite.png"))
+	{
+		std::cerr << "Error in loading peashooter file. Terminating...\n";
+		// You might want to add additional error handling here, like returning or throwing an exception.
+		// For now, let's just return without setting the texture.
+		return;
+	}
+	sprite.setTexture(texture);
+	sprite.setTextureRect(sf::IntRect(0, 0, 572, 439));
 }
+
+//void Wallnut::setImage()
+//{
+//	//set sprite
+//}
 
 //void Wallnut::drawPlant(sf::RenderWindow& window)
 //{

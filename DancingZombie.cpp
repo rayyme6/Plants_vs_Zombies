@@ -11,7 +11,7 @@ DancingZombie::DancingZombie() : hitPoints(4), speed(0.7f), directionX(-1.0f), d
 
 // Set the image for the dancing zombie
 void DancingZombie::setImage(const std::string& file) {
-    if (!texture.loadFromFile("../Images/dancing.png")) {
+    if (!texture.loadFromFile("Images/dancing.png")) {
         std::cerr << "Error: Failed to load dancing zombie texture file. Terminating...\n";
         return;
     }

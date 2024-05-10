@@ -11,7 +11,7 @@ FootballZombie::FootballZombie() : hitPoints(5), speed(1.0f), directionX(-1.0f),
 
 // Set the image for the football zombie
 void FootballZombie::setImage(const std::string& file) {
-    if (!texture.loadFromFile("../Images/fooball.png")) {
+    if (!texture.loadFromFile("Images/fooball.png")) {
         std::cerr << "Error: Failed to load football zombie texture file. Terminating...\n";
         return;
     }

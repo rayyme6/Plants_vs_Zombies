@@ -126,7 +126,7 @@ int main()
 				if (row >= 0 && row < ROWS && col >= 0 && col < COLS && FIELD_GAME_STATUS[row][col]) {
 					// Spawn the sprite at the clicked position
 					plants[row][col] = plantFactory.newPeashooter();
-					plants[row][col]->setImage();
+					//plants[row][col]->setImage();
 					plants[row][col]->spawn(col * 80 + 231, row * 100 + 180);
 					cout << "Row: " << row << ", Column: " << col << endl;
 
@@ -155,7 +155,7 @@ int main()
 		}
 
 		sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
-		std::cout << "Mouse Position: (" << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;
+		/*std::cout << "Mouse Position: (" << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;*/
 		window.clear();
 
 		//Create a background

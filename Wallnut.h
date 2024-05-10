@@ -3,7 +3,9 @@
 
 class Wallnut : public Plant
 {
-	void setImage();
+public:
+	Wallnut();
+	//void setImage();
 	//void drawPlant(sf::RenderWindow& window);
 	void peaShootpoint();
 	void setDx(double d);

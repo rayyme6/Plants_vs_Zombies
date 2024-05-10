@@ -3,7 +3,9 @@
 
 class Repeater : public Plant
 {
-	void setImage();
+public:
+	Repeater();
+	//void setImage();
 	//void drawPlant(sf::RenderWindow& window);
 	void peaShootpoint();
 	void setDx(double d);

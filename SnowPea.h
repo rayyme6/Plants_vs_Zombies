@@ -2,7 +2,9 @@
 #include "Plant.h"
 class SnowPea : public Plant
 {
-	void setImage(); 
+public:
+	SnowPea();
+	//void setImage(); 
 	//void drawPlant(sf::RenderWindow& window);
 	void peaShootpoint();
 	void setDx(double d);

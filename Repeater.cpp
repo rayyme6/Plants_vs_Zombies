@@ -1,9 +1,22 @@
 #include "Repeater.h"
 
-void Repeater::setImage()
+Repeater::Repeater()
 {
-	//set sprite
+	if (!texture.loadFromFile("Images/repeater_sprite.png"))
+	{
+		std::cerr << "Error in loading peashooter file. Terminating...\n";
+		// You might want to add additional error handling here, like returning or throwing an exception.
+		// For now, let's just return without setting the texture.
+		return;
+	}
+	sprite.setTexture(texture);
+	sprite.setTextureRect(sf::IntRect(0, 0, 572, 439));
 }
+
+//void Repeater::setImage()
+//{
+//	//set sprite
+//}
 
 //void Repeater::drawPlant(sf::RenderWindow& window)
 //{
