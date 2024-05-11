@@ -6,18 +6,24 @@
 DancingZombie::DancingZombie() : hitPoints(4), speed(0.7f), directionX(-1.0f), directionY(0.5f) {
     // Initialize a default random position
     initializeRandomPosition(/*1200, 700*/);
-    sprite.setScale(0.6f, 0.6f);
-}
-
-// Set the image for the dancing zombie
-void DancingZombie::setImage(const std::string& file) {
     if (!texture.loadFromFile("Images/dancing.png")) {
         std::cerr << "Error: Failed to load dancing zombie texture file. Terminating...\n";
         return;
     }
     sprite.setTexture(texture);
     sprite.setTextureRect(sf::IntRect(0, 0, 150, 270)); // Adjust size as needed
+    sprite.setScale(0.6f, 0.6f);
 }
+
+// Set the image for the dancing zombie
+//void DancingZombie::setImage(const std::string& file) {
+//    if (!texture.loadFromFile("../Images/dancing.png")) {
+//        std::cerr << "Error: Failed to load dancing zombie texture file. Terminating...\n";
+//        return;
+//    }
+//    sprite.setTexture(texture);
+//    sprite.setTextureRect(sf::IntRect(0, 0, 150, 270)); // Adjust size as needed
+//}
 
 // Move the dancing zombie diagonally
 void DancingZombie::move() {
@@ -41,10 +47,11 @@ void DancingZombie::drawZombie(sf::RenderWindow& window) {
 // Update the dancing zombie's state every frame
 void DancingZombie::update(sf::RenderWindow& window, double time) {
     this->move(); // Move the zombie
+    this->drawZombie(window);
 
     // Check if zombie is off-screen on the left side and destroy it
     if (posX < -sprite.getGlobalBounds().width) {
-        std::cerr << "Dancing zombie reached the left end and will be removed.\n";
+        // std::cerr << "Dancing zombie reached the left end and will be removed.\n";
         this->destroy(); // Remove zombie from the game
     }
 
@@ -76,5 +83,5 @@ bool DancingZombie::isHitByPea() {
 // Destroy the dancing zombie
 void DancingZombie::destroy() {
     // Logic to remove the zombie from the game
-    std::cerr << "Dancing zombie is destroyed." << std::endl;
+   // std::cerr << "Dancing zombie is destroyed." << std::endl;
 }

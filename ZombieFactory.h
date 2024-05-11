@@ -21,6 +21,6 @@ public:
     static int getZombieCount();
 
     // Method to randomly generate zombies at random intervals
-    static void generateRandomZombies(int maxZombies, int minIntervalMs, int maxIntervalMs);
+    //static void generateRandomZombies(int maxZombies);
 };
 

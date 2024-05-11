@@ -2,8 +2,6 @@
 //#include "SFML/Graphics.hpp"
 //#include <iostream>
 //
-//Pea::
-//
 //Pea::Pea()
 //{
 //    if (!texture.loadFromFile("Images/pea.png")) {

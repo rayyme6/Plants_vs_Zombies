@@ -1,186 +1,269 @@
-﻿#include <SFML/Graphics.hpp>
+﻿#include <iostream>
+#include <SFML/Graphics.hpp>
 #include <ctime>
-#include "Peashooter.h"
-#include "Plant_Factory.h"
+#include <cstdlib>
+#include <string>
 #include "SimpleZombie.h"
 #include "FootballZombie.h"
 #include "DancingZombie.h"
 #include "FlyingZombie.h"
-using namespace sf;
+#include "Peashooter.h"
+#include "Plant_Factory.h"
+#include "ZombieFactory.h"
 
-struct coordinats {
-	int x;
-	int y;
+using namespace sf;
+using namespace std;
+
+struct Coordinates {
+    int x;
+    int y;
 };
 
+void createBack(RenderWindow& window);
+void handleMenu(RenderWindow& window);
+void handleInstructions(RenderWindow& window);
+void handleGameplay(RenderWindow& window, Plant_Factory& plantFactory, ZombieFactory& zombieFactory, Peashooter& pee, Plant* plants[5][9], bool FIELD_GAME_STATUS[5][9], Zombie* zombies[], int& zombiesGenerated, const int MAX_ZOMBIES, float& time, float zombieGenerationInterval, sf::Clock& zombieClock, Coordinates peashooterPositions[], int& numPeashooters, const int MAX_PEASHOOTERS);
+void handlePause(RenderWindow& window);
+void handleHighScores(RenderWindow& window);
+void handleEnd(RenderWindow& window);
 
+Font font;
 
-//Drawing the background
+int main() {
+    Plant_Factory plantFactory;
+    ZombieFactory zombieFactory;
+    Peashooter pee;
+
+    std::srand(static_cast<unsigned int>(std::time(0)));
+
+    pee.setImage();
+    RenderWindow window(VideoMode(1200, 700), "Plants vs Zombies");
+
+    // Load font
+    if (!font.loadFromFile("arial.ttf")) {
+        cerr << "Failed to load font" << endl;
+        return -1;
+    }
+
+    // Game icon
+    Image icon;
+    if (icon.loadFromFile("Images/icon.png")) {
+        window.setIcon(32, 32, icon.getPixelsPtr());
+    }
+    else {
+        std::cerr << "Failed to load icon" << std::endl;
+    }
+    window.setFramerateLimit(60);
+
+    const int MAX_ZOMBIES = 10; // Maximum zombies
+    int zombiesGenerated = 0;
+    sf::Clock zombieClock; // Clock for managing zombie generation
+    float zombieGenerationInterval = 2.0f; // Interval between zombie generations
+
+    const int ROWS = 5;
+    const int COLS = 9;
+    bool FIELD_GAME_STATUS[ROWS][COLS];
+    Plant* plants[ROWS][COLS]; // Array for plants
+    Zombie* zombies[MAX_ZOMBIES] = { nullptr }; // Fixed-size array for zombies
+
+    for (int i = 0; i < ROWS; i++) {
+        for (int j = 0; j < COLS; j++) {
+            FIELD_GAME_STATUS[i][j] = true;
+        }
+    }
+
+    Clock clock;
+
+    sf::FloatRect clickArea(0, 0, 1200, 700);
+    Coordinates peashooterPositions[10];
+    int numPeashooters = 0;
+
+    string currentGameState = "MENU";
+
+    while (window.isOpen()) {
+        float time = clock.getElapsedTime().asMicroseconds();
+        clock.restart();
+        time = time / 800;
+
+        Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == Event::Closed) {
+                window.close();
+            }
+
+            if (event.type == Event::KeyPressed) {
+                if (event.key.code == Keyboard::Escape) {
+                    if (currentGameState == "GAMEPLAY") {
+                        currentGameState = "PAUSE";
+                    }
+                    else if (currentGameState == "PAUSE") {
+                        currentGameState = "GAMEPLAY";
+                    }
+                }
+            }
+
+            if (currentGameState == "MENU") {
+                if (event.type == sf::Event::MouseButtonPressed) {
+                    currentGameState = "GAMEPLAY"; // Example: start game
+                }
+            }
+
+            if (currentGameState == "PAUSE") {
+                if (event.type == sf::Event::MouseButtonPressed) {
+                    currentGameState = "GAMEPLAY"; // Example: resume game
+                }
+            }
+        }
+
+        if (currentGameState == "MENU") {
+            handleMenu(window);
+        }
+        else if (currentGameState == "INSTRUCTIONS") {
+            handleInstructions(window);
+        }
+        else if (currentGameState == "GAMEPLAY") {
+            handleGameplay(window, plantFactory, zombieFactory, pee, plants, FIELD_GAME_STATUS, zombies, zombiesGenerated, MAX_ZOMBIES, time, zombieGenerationInterval, zombieClock, peashooterPositions, numPeashooters, 10);
+        }
+        else if (currentGameState == "PAUSE") {
+            handlePause(window);
+        }
+        else if (currentGameState == "HIGH_SCORES") {
+            handleHighScores(window);
+        }
+        else if (currentGameState == "END") {
+            handleEnd(window);
+        }
+    }
+
+    for (int i = 0; i < MAX_ZOMBIES; ++i) {
+        delete zombies[i];
+    }
+
+    return 0;
+}
+
+void handleMenu(RenderWindow& window) {
+    window.clear(Color::Black);
+    Text title("Game Menu", font, 50);
+    title.setPosition(100, 100);
+    window.draw(title);
+    window.display();
+}
+
+void handleInstructions(RenderWindow& window) {
+    window.clear(Color::Black);
+    Text instructions("Instructions", font, 50);
+    instructions.setPosition(100, 100);
+    window.draw(instructions);
+    window.display();
+}
+
+void handleGameplay(RenderWindow& window, Plant_Factory& plantFactory, ZombieFactory& zombieFactory, Peashooter& pee, Plant* plants[5][9], bool FIELD_GAME_STATUS[5][9], Zombie* zombies[], int& zombiesGenerated, const int MAX_ZOMBIES, float& time, float zombieGenerationInterval, sf::Clock& zombieClock, Coordinates peashooterPositions[], int& numPeashooters, const int MAX_PEASHOOTERS) {
+    Event event;
+    while (window.pollEvent(event)) {
+        if (event.type == sf::Event::Closed) {
+            window.close();
+        }
+
+        if (event.type == sf::Event::MouseButtonPressed) {
+            int row = (event.mouseButton.y - 80) / 108;
+            int col = (event.mouseButton.x - 200) / 108;
+
+            if (row >= 0 && row < 5 && col >= 0 && col < 9 && FIELD_GAME_STATUS[row][col]) {
+                plants[row][col] = plantFactory.newPeashooter();
+                plants[row][col]->spawn(col * 80 + 250, row * 100 + 80);
+
+                peashooterPositions[numPeashooters].x = event.mouseButton.x;
+                peashooterPositions[numPeashooters].y = event.mouseButton.y;
+                numPeashooters++;
+
+                if (numPeashooters >= MAX_PEASHOOTERS) {
+                    return;
+                }
+
+                FIELD_GAME_STATUS[row][col] = false;
+            }
+        }
+    }
+
+    createBack(window);
+
+    for (int i = 0; i < numPeashooters; ++i) {
+        pee.spawnPeashooter(peashooterPositions[i].x, peashooterPositions[i].y);
+        pee.drawPeashooter(window);
+    }
+
+    if (zombiesGenerated < MAX_ZOMBIES && zombieClock.getElapsedTime().asSeconds() >= zombieGenerationInterval) {
+        for (int i = 0; i < MAX_ZOMBIES; ++i) {
+            if (!zombies[i]) {
+                int randomZombieType = std::rand() % 4;
+                switch (randomZombieType) {
+                case 0:
+                    zombies[i] = zombieFactory.newSimpleZombie();
+                    break;
+                case 1:
+                    zombies[i] = zombieFactory.newFootballZombie();
+                    break;
+                case 2:
+                    zombies[i] = zombieFactory.newFlyingZombie();
+                    break;
+                case 3:
+                    zombies[i] = zombieFactory.newDancingZombie();
+                    break;
+                }
+                zombiesGenerated++;
+                break;
+            }
+        }
+        zombieClock.restart();
+    }
+
+    for (int i = 0; i < MAX_ZOMBIES; ++i) {
+        if (zombies[i]) {
+            zombies[i]->move();
+            zombies[i]->update(window, time);
+        }
+    }
+
+    window.display();
+}
+
+void handlePause(RenderWindow& window) {
+    window.clear(Color::Black);
+    Text pause("Pause", font, 50);
+    pause.setPosition(100, 100);
+    window.draw(pause);
+    window.display();
+}
+
+void handleHighScores(RenderWindow& window) {
+    window.clear(Color::Black);
+    Text highScores("High Scores", font, 50);
+    highScores.setPosition(100, 100);
+    window.draw(highScores);
+    window.display();
+}
+
+void handleEnd(RenderWindow& window) {
+    window.clear(Color::Black);
+    Text end("Game Over", font, 50);
+    end.setPosition(100, 100);
+    window.draw(end);
+    window.display();
+}
+
 void createBack(RenderWindow& window) {
-	//Drawing the background
-	Image map_image;
-	map_image.loadFromFile("Images/backwindow.jpg");
-	Texture map;
-	map.loadFromImage(map_image);
-	Sprite s_map;
-	s_map.setTexture(map);
-	s_map.setPosition(0, 0);
-	window.draw(s_map);
+    Image map_image;
+    if (map_image.loadFromFile("Images/backwindow.jpg")) {
+        Texture map;
+        map.loadFromImage(map_image);
+        Sprite s_map;
+        s_map.setTexture(map);
+        s_map.setPosition(0, 0);
+        window.draw(s_map);
+    }
+    else {
+        std::cerr << "Failed to load background image" << std::endl;
+    }
 }
 
-//Drawing the map
-void createMap(RenderWindow& window) {
-	//Drawing a map
-	Image map_image;//объект изображения для карты
-	map_image.loadFromFile("Images/grid.png");//load the file for the map
-	Texture map;
-	map.loadFromImage(map_image);
-	Sprite s_map;
-	s_map.setTexture(map);
-	s_map.setPosition(200, 80);
-
-	window.draw(s_map);
-}
-Peashooter pee;
-const int MAX_PLANTS = 100; // Maximum number of peashooters
-coordinats peashooterPositions[MAX_PLANTS]; // Store positions of placed peashooters
-coordinats cherrybombPositions[MAX_PLANTS];
-int numPeashooters = 0; // Track the number of placed peashooters
-int numCherrybombs = 0; // Track the number of placed cherrybombs
-
-int main()
-{
-	Plant_Factory plantFactory; // plant factory
-	std::srand(static_cast<unsigned int>(std::time(0)));
-
-	//Create a window, n*n
-	RenderWindow window(VideoMode(1200, 700), "Plants Vs Zombies");
-	//Game icon
-	Image icon;
-	if (!icon.loadFromFile("Images/icon.png"))
-	{
-		return 1;
-	}
-	window.setIcon(32, 32, icon.getPixelsPtr());
-
-
-	// Instantiate SimpleZombie
-	SimpleZombie simpleZombie;
-	simpleZombie.setImage("../Images/simple.png");
-	simpleZombie.initializeRandomPosition(/*1200, 700*/);
-
-	// Instantiate FootballZombie
-	FootballZombie footballZombie;
-	footballZombie.setImage("../Images/fooball.png");
-	footballZombie.initializeRandomPosition(/*1200, 700*/);
-
-	DancingZombie dancingZombie;
-	dancingZombie.setImage("../Images/dancing.png");
-	dancingZombie.initializeRandomPosition(/*1200, 700*/);
-
-	// Instantiate FlyingZombie directly
-	FlyingZombie flyingZombie;
-	flyingZombie.setImage("../Images/flying.png");
-	flyingZombie.initializeRandomPosition(/*1200, 700*/);
-	///////////////////////////////////////
-
-	//Game field (5*9)
-	//Point 137*79 - leftmost point
-	//length 41; width 53
-	const int ROWS = 5;
-	const int COLS = 9;
-
-	bool FIELD_GAME_STATUS[ROWS][COLS];
-	Plant* plants[ROWS][COLS]; // plants array
-
-	for (int i = 0; i < ROWS; i++) {
-		for (int j = 0; j < COLS; j++) {
-			FIELD_GAME_STATUS[i][j] = true;
-		}
-	}
-
-	Clock timeMoney;
-	Clock clock;
-
-	sf::FloatRect clickArea(0, 0, 1200, 700);
-
-	while (window.isOpen())
-	{
-		float time = clock.getElapsedTime().asMicroseconds();
-		float moneyTime = timeMoney.getElapsedTime().asSeconds();
-
-		clock.restart();
-		time = time / 800;
-
-		Event event;
-		while (window.pollEvent(event))
-		{
-			if (event.type == Event::Closed)
-				window.close();
-
-			if (event.type == sf::Event::MouseButtonPressed) {
-				int row = (event.mouseButton.y - 80) / 108; // Calculate the row
-				int col = (event.mouseButton.x - 200) / 108; // Calculate the column
-				
-				// Make sure the clicked position is inside the grid
-				if (row >= 0 && row < ROWS && col >= 0 && col < COLS && FIELD_GAME_STATUS[row][col]) {
-					// Spawn the sprite at the clicked position
-					plants[row][col] = plantFactory.newPeashooter();
-					//plants[row][col]->setImage();
-					plants[row][col]->spawn(col * 80 + 231, row * 100 + 180);
-					cout << "Row: " << row << ", Column: " << col << endl;
-
-					// Store the position of the placed peashooter
-					peashooterPositions[numPeashooters].x = event.mouseButton.x;
-					peashooterPositions[numPeashooters].y = event.mouseButton.y;
-					numPeashooters++;
-
-					// Ensure we don't exceed the maximum number of peashooters
-					if (numPeashooters >= MAX_PLANTS) {
-						return 1;
-					}
-
-					// Update the grid status
-					FIELD_GAME_STATUS[row][col] = false;
-
-					//if (plants[row][col]->canShootPea() && clock.getElapsedTime().asSeconds() >= 2) {
-					//	// Shoot a pea
-					//	Pea pea = plants[row][col]->shootPea();
-					//	// Add the pea to your game entities or draw it directly
-					//	// Reset the shooting timer
-					//	clock.restart();
-					//}
-				}
-			}
-		}
-
-		sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
-		/*std::cout << "Mouse Position: (" << mousePosition.x << ", " << mousePosition.y << ")" << std::endl;*/
-		window.clear();
-
-		//Create a background
-		createBack(window);
-		/*createMap(window);*/
-
-		//for (int i = 0; i < numPeashooters; ++i) {
-		//	pee.spawnPeashooter(peashooterPositions[i].x, peashooterPositions[i].y);
-		//	pee.drawPeashooter(window);
-		//}
-		for (int i = 0; i < ROWS; i++) {
-			for (int j = 0; j < COLS; j++) {
-				if (FIELD_GAME_STATUS[i][j]) continue;
-				window.draw(plants[i][j]->getImage());
-			}
-		}
-
-		// Update and draw the zombies
-		simpleZombie.update(window, time);
-		footballZombie.update(window, time);
-		dancingZombie.update(window, time);
-		flyingZombie.update(window, time);
-
-
-		window.display();
-	}
-	return 0;
-}

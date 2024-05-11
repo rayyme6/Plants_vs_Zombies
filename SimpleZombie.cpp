@@ -9,27 +9,34 @@ SimpleZombie::SimpleZombie() : hitPoints(3), speed(1.7f), directionX(-1.0f), dir
   //  posY = static_cast<float>(rand() % 600);
     initializeRandomPosition(/*1200, 700*/);
     sprite.setScale(0.6f, 0.6f);
-
-    this->setPosition(posX, posY); // Initial position
-}
-// Initialize the zombie at a random position
-void SimpleZombie::initializeRandomPosition(/*int windowWidth, int windowHeight*/) {
-    // Start just beyond the right edge of the window
-    posX = static_cast<float>(1200 + rand() % 100);// 1200 is windowwidth
-    // Random y position within the window height
-    posY = static_cast<float>(rand() % 700);// 800 is window height
-
-    this->setPosition(posX, posY);
-}
-// Set the image for the zombie
-void SimpleZombie::setImage(const std::string& file) {
     if (!texture.loadFromFile("Images/simple.png")) {
         std::cerr << "Error: Failed to load zombie texture file. Terminating...\n";
         return;
     }
     sprite.setTexture(texture);
     sprite.setTextureRect(sf::IntRect(0, 0, 170, 270)); // Adjust size as needed
+    this->setPosition(posX, posY); // Initial position
+
 }
+// Initialize the zombie at a random position
+void SimpleZombie::initializeRandomPosition(/*int windowWidth, int windowHeight*/) {
+    // Start just beyond the right edge of the window
+    posX = static_cast<float>(1000 + rand() % 100);// 1200 is windowwidth
+    // Random y position within the window height
+    posY = static_cast<float>(rand() % 700);// 800 is window height
+
+    this->setPosition(posX, posY);
+    move();
+}
+// Set the image for the zombie
+//void SimpleZombie::setImage(const std::string& file) {
+//    if (!texture.loadFromFile("../Images/simple.png")) {
+//        std::cerr << "Error: Failed to load zombie texture file. Terminating...\n";
+//        return;
+//    }
+//    sprite.setTexture(texture);
+//    sprite.setTextureRect(sf::IntRect(0, 0, 170, 270)); // Adjust size as needed
+//}
 
 // Move the zombie forward
 void SimpleZombie::move() {

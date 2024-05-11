@@ -6,18 +6,24 @@
 FootballZombie::FootballZombie() : hitPoints(5), speed(1.0f), directionX(-1.0f), directionY(0.0f) {
     // Initialize a default random position
     initializeRandomPosition();
-    sprite.setScale(0.6f, 0.6f);
-}
-
-// Set the image for the football zombie
-void FootballZombie::setImage(const std::string& file) {
     if (!texture.loadFromFile("Images/fooball.png")) {
         std::cerr << "Error: Failed to load football zombie texture file. Terminating...\n";
         return;
     }
     sprite.setTexture(texture);
     sprite.setTextureRect(sf::IntRect(0, 0, 150, 270)); // Adjust size as needed
+    sprite.setScale(0.6f, 0.6f);
 }
+
+// Set the image for the football zombie
+//void FootballZombie::setImage(const std::string& file) {
+//    if (!texture.loadFromFile("../Images/fooball.png")) {
+//        std::cerr << "Error: Failed to load football zombie texture file. Terminating...\n";
+//        return;
+//    }
+//    sprite.setTexture(texture);
+//    sprite.setTextureRect(sf::IntRect(0, 0, 150, 270)); // Adjust size as needed
+//}
 
 // Move the football zombie from right to left
 void FootballZombie::move() {

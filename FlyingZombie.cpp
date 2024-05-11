@@ -8,18 +8,24 @@
 FlyingZombie::FlyingZombie() : hitPoints(2), speed(1.2f), directionX(-1.0f) {
     // Initialize a default random position
     initializeRandomPosition(/*1200, 700*/);
-    sprite.setScale(0.6f, 0.6f);
-}
-
-// Set the image for the flying zombie
-void FlyingZombie::setImage(const std::string& file) {
     if (!texture.loadFromFile("Images/flying.png")) {
         std::cerr << "Error: Failed to load flying zombie texture file. Terminating...\n";
         return;
     }
     sprite.setTexture(texture);
     sprite.setTextureRect(sf::IntRect(0, 0, 150, 270)); // Adjust size as needed
+    sprite.setScale(0.6f, 0.6f);
 }
+
+// Set the image for the flying zombie
+//void FlyingZombie::setImage(const std::string& file) {
+//    if (!texture.loadFromFile("../Images/flying.png")) {
+//        std::cerr << "Error: Failed to load flying zombie texture file. Terminating...\n";
+//        return;
+//    }
+//    sprite.setTexture(texture);
+//    sprite.setTextureRect(sf::IntRect(0, 0, 150, 270)); // Adjust size as needed
+//}
 
 // Move the flying zombie horizontally
 void FlyingZombie::move() {
