@@ -23,10 +23,10 @@ void createBack(RenderWindow& window);
 void createMap(RenderWindow& window);
 void handleMenu(RenderWindow& window, Sprite& menuSprite, Font& font, string& currentGameState);
 void handleInstructions(RenderWindow& window, Sprite& instSprite, Font& font, string& currentGameState);
-void handleGameplay(RenderWindow& window, Plant_Factory& plantFactory, ZombieFactory& zombieFactory, Peashooter& pee, Plant* plants[5][9], bool FIELD_GAME_STATUS[5][9], Zombie* zombies[], int& zombiesGenerated, const int MAX_ZOMBIES, float& time, float zombieGenerationInterval, sf::Clock& zombieClock, Coordinates peashooterPositions[], int& numPeashooters, const int MAX_PEASHOOTERS);
+void handleGameplay(RenderWindow& window, Plant_Factory& plantFactory, ZombieFactory& zombieFactory, Peashooter& pee, Plant* plants[5][9], bool FIELD_GAME_STATUS[5][9], Zombie* zombies[], int& zombiesGenerated, const int MAX_ZOMBIES, float& time, float zombieGenerationInterval, sf::Clock& zombieClock, Coordinates peashooterPositions[], int& numPeashooters, const int MAX_PEASHOOTERS, int& lives, string& currentGameState);
 void handlePause(RenderWindow& window, Font& font, string& currentGameState);
 void handleHighScores(RenderWindow& window);
-void handleEnd(RenderWindow& window);
+void handleEnd(RenderWindow& window, Font& font, Sprite& overSprite);
 
 Font font;
 
@@ -42,26 +42,38 @@ int main() {
 
     // Load font
     if (!font.loadFromFile("arial.ttf")) {
-        cerr << "Failed to load font" << endl;
-        return -1;
+        //cerr << "Failed to load font" << endl;
+       // return -1;
+    }
+    if (!font.loadFromFile("BLOOD.ttf")) {
+        cerr << "Failed to load BLOOD font" << endl;
+        // return -1;
     }
 
     // Load menu image
     Texture menuTexture;
-    if (!menuTexture.loadFromFile("Images/lol.JPEG")) { // Replace with your image path
+    if (!menuTexture.loadFromFile("Images/lol.jpeg")) { // Replace with your image path
         cerr << "Failed to load menu image" << endl;
-        return -1;
+        //  return -1;
     }
     Sprite menuSprite(menuTexture);
-    menuSprite.setScale(1.67f, 1.67f);
+    menuSprite.setScale(1.69f, 1.69f);
 
     // Load instructions image
     Texture instTexture;
     if (!instTexture.loadFromFile("Images/inst.jpg")) { // Replace with your image path
         cerr << "Failed to load instructions image" << endl;
-        return -1;
+        // return -1;
     }
     Sprite instSprite(instTexture);
+
+
+    Texture overTexture;
+    if (!overTexture.loadFromFile("Images/gameoverfinal.jpeg")) { // Replace with your image path
+        cerr << "Failed to load instructions image" << endl;
+        // return -1;
+    }
+    Sprite overSprite(overTexture);
 
     // Game icon
     Image icon;
@@ -95,6 +107,7 @@ int main() {
     sf::FloatRect clickArea(0, 0, 1200, 700);
     Coordinates peashooterPositions[10];
     int numPeashooters = 0;
+    int lives = 3;
 
     string currentGameState = "MENU";
 
@@ -128,7 +141,7 @@ int main() {
             handleInstructions(window, instSprite, font, currentGameState);
         }
         else if (currentGameState == "GAMEPLAY") {
-            handleGameplay(window, plantFactory, zombieFactory, pee, plants, FIELD_GAME_STATUS, zombies, zombiesGenerated, MAX_ZOMBIES, time, zombieGenerationInterval, zombieClock, peashooterPositions, numPeashooters, 10);
+            handleGameplay(window, plantFactory, zombieFactory, pee, plants, FIELD_GAME_STATUS, zombies, zombiesGenerated, MAX_ZOMBIES, time, zombieGenerationInterval, zombieClock, peashooterPositions, numPeashooters, 10, lives, currentGameState);
         }
         else if (currentGameState == "PAUSE") {
             handlePause(window, font, currentGameState);
@@ -137,7 +150,7 @@ int main() {
             handleHighScores(window);
         }
         else if (currentGameState == "END") {
-            handleEnd(window);
+            handleEnd(window, font, overSprite);
         }
     }
 
@@ -149,19 +162,23 @@ int main() {
 }
 
 void handleMenu(RenderWindow& window, Sprite& menuSprite, Font& font, string& currentGameState) {
-    window.clear(Color::Black);
+    window.clear(Color::Red);
     window.draw(menuSprite);
-    Text title("Game Menu", font, 50);
-    title.setPosition(10, 100);
+    Text title("Game Menu", font, 80);
+    title.setFillColor(Color::Black);
+    title.setPosition(420, 240);
     window.draw(title);
 
     // Add buttons for navigation
-    Text startGame("Start Game", font, 40);
-    startGame.setPosition(100, 200);
+    Text startGame("Start Game", font, 60);
+    startGame.setPosition(470, 350);
+    startGame.setFillColor(Color::Red);
     window.draw(startGame);
 
-    Text instructions("Instructions", font, 40);
-    instructions.setPosition(100, 250);
+
+    Text instructions("Instructions", font, 50);
+    instructions.setPosition(490, 430);
+    instructions.setFillColor(Color::Red);
     window.draw(instructions);
 
     window.display();
@@ -187,15 +204,15 @@ void handleMenu(RenderWindow& window, Sprite& menuSprite, Font& font, string& cu
 void handleInstructions(RenderWindow& window, Sprite& instSprite, Font& font, string& currentGameState) {
     window.clear(Color::Black);
     window.draw(instSprite);
-    Text instructions("Instructions", font, 60);
-    instructions.setPosition(10, 10);
-    instructions.setFillColor(Color::Black);
+    Text instructions("Instructions", font, 50);
+    instructions.setPosition(800, 230);
+    instructions.setFillColor(Color::White); // Change color to white
     window.draw(instructions);
 
     // Add a back button
-    Text back("Back", font, 40);
-    back.setPosition(100, 100);
-    back.setFillColor(Color::Black);
+    Text back("Back", font, 70);
+    back.setPosition(950, 280);
+    back.setFillColor(Color::Red); // Change color to red
     window.draw(back);
 
     window.display();
@@ -215,7 +232,7 @@ void handleInstructions(RenderWindow& window, Sprite& instSprite, Font& font, st
     }
 }
 
-void handleGameplay(RenderWindow& window, Plant_Factory& plantFactory, ZombieFactory& zombieFactory, Peashooter& pee, Plant* plants[5][9], bool FIELD_GAME_STATUS[5][9], Zombie* zombies[], int& zombiesGenerated, const int MAX_ZOMBIES, float& time, float zombieGenerationInterval, sf::Clock& zombieClock, Coordinates peashooterPositions[], int& numPeashooters, const int MAX_PEASHOOTERS) {
+void handleGameplay(RenderWindow& window, Plant_Factory& plantFactory, ZombieFactory& zombieFactory, Peashooter& pee, Plant* plants[5][9], bool FIELD_GAME_STATUS[5][9], Zombie* zombies[], int& zombiesGenerated, const int MAX_ZOMBIES, float& time, float zombieGenerationInterval, sf::Clock& zombieClock, Coordinates peashooterPositions[], int& numPeashooters, const int MAX_PEASHOOTERS, int& lives, string& currentGameState) {
     Event event;
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
@@ -255,6 +272,7 @@ void handleGameplay(RenderWindow& window, Plant_Factory& plantFactory, ZombieFac
         for (int i = 0; i < MAX_ZOMBIES; ++i) {
             if (!zombies[i]) {
                 int randomZombieType = std::rand() % 4;
+                int randomRow = std::rand() % 5;
                 switch (randomZombieType) {
                 case 0:
                     zombies[i] = zombieFactory.newSimpleZombie();
@@ -269,6 +287,8 @@ void handleGameplay(RenderWindow& window, Plant_Factory& plantFactory, ZombieFac
                     zombies[i] = zombieFactory.newDancingZombie();
                     break;
                 }
+                // Set the initial position of the zombie in the specified row
+                zombies[i]->setPosition(1200, randomRow * 100 + 80);
                 zombiesGenerated++;
                 break;
             }
@@ -280,6 +300,15 @@ void handleGameplay(RenderWindow& window, Plant_Factory& plantFactory, ZombieFac
         if (zombies[i]) {
             zombies[i]->move();
             zombies[i]->update(window, time);
+            // Check if zombie reaches the end
+            if (zombies[i]->getXPosition() <= 0) {
+                delete zombies[i];
+                zombies[i] = nullptr;
+                lives--;
+                if (lives <= 0) {
+                    currentGameState = "END";
+                }
+            }
         }
     }
 
@@ -322,11 +351,12 @@ void handleHighScores(RenderWindow& window) {
     window.display();
 }
 
-void handleEnd(RenderWindow& window) {
-    window.clear(Color::Black);
-    Text end("Game Over", font, 50);
+void handleEnd(RenderWindow& window, Font& font, Sprite& overSprite) {
+    //  window.clear(Color::Black);
+    Text end("Game Over", font, 100);
     end.setPosition(100, 100);
-    window.draw(end);
+    end.setFillColor(Color::White);
+    window.draw(overSprite);
     window.display();
 }
 
