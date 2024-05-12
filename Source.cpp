@@ -42,18 +42,18 @@ int main() {
     RenderWindow window(VideoMode(1200, 700), "Plants vs Zombies");
 
     // Load font
-    if (!font.loadFromFile("../Images/arial.ttf")) {
+    if (!font.loadFromFile("arial.ttf")) {
         cerr << "Failed to load font" << endl;
         return -1;
     }
-    if (!font.loadFromFile("../Images/BLOOD.ttf")) {
+    if (!font.loadFromFile("BLOOD.ttf")) {
         cerr << "Failed to load BLOOD font" << endl;
         return -1;
     }
 
     // Load menu image
     Texture menuTexture;
-    if (!menuTexture.loadFromFile("../Images/lol.jpeg")) {
+    if (!menuTexture.loadFromFile("Images/lol.jpeg")) {
         cerr << "Failed to load menu image" << endl;
         return -1;
     }
@@ -62,7 +62,7 @@ int main() {
 
     // Load instructions image
     Texture instTexture;
-    if (!instTexture.loadFromFile("../Images/inst.jpg")) {
+    if (!instTexture.loadFromFile("Images/inst.jpg")) {
         cerr << "Failed to load instructions image" << endl;
         return -1;
     }
@@ -70,7 +70,7 @@ int main() {
 
     // Load game over image
     Texture overTexture;
-    if (!overTexture.loadFromFile("../Images/gameoverfinal.jpeg")) {
+    if (!overTexture.loadFromFile("Images/gameoverfinal.jpeg")) {
         cerr << "Failed to load game over image" << endl;
         return -1;
     }
@@ -78,7 +78,7 @@ int main() {
 
     // Load pause button image
     Texture pauseTexture;
-    if (!pauseTexture.loadFromFile("../Images/pausesprite.jpg")) {
+    if (!pauseTexture.loadFromFile("Images/pausebutton.jpg")) {
         cerr << "Failed to load pause button image" << endl;
         return -1;
     }
@@ -88,7 +88,7 @@ int main() {
 
     // Load pause background image
     Texture pauseBackgroundTexture;
-    if (!pauseBackgroundTexture.loadFromFile("../Images/pause.jpg")) {
+    if (!pauseBackgroundTexture.loadFromFile("Images/pause.jpg")) {
         cerr << "Failed to load pause background image" << endl;
         return -1;
     }
@@ -98,7 +98,7 @@ int main() {
 
     // Load high scores button image
     Texture highScoresButtonTexture;
-    if (!highScoresButtonTexture.loadFromFile("../Images/high.jpg")) {
+    if (!highScoresButtonTexture.loadFromFile("Images/highscorebutton.jpg")) {
         cerr << "Failed to load high scores button image" << endl;
         return -1;
     }
@@ -108,7 +108,7 @@ int main() {
 
     // Load high scores background image
     Texture highTexture;
-    if (!highTexture.loadFromFile("../Images/score.jpg")) {
+    if (!highTexture.loadFromFile("Images/score.jpg")) {
         cerr << "Failed to load high scores background image" << endl;
         return -1;
     }
@@ -118,7 +118,7 @@ int main() {
 
     // Game icon
     Image icon;
-    if (icon.loadFromFile("../Images/extra.png")) {
+    if (icon.loadFromFile("Images/icon.png")) {
         window.setIcon(32, 32, icon.getPixelsPtr());
     }
     else {
@@ -426,7 +426,7 @@ void handleEnd(RenderWindow& window, Font& font, Sprite& overSprite) {
 
 void createBack(RenderWindow& window) {
     Image mapImage;
-    if (mapImage.loadFromFile("../Images/finalgrid.JPEG")) {
+    if (mapImage.loadFromFile("Images/backwindow.jpg")) {
         Texture map;
         map.loadFromImage(mapImage);
         Sprite sMap;
