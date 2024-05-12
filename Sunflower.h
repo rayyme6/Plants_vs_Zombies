@@ -1,11 +1,15 @@
 #pragma once
 #include "Plant.h"
+#include "Sun.h"
 #include "SFML/Graphics.hpp"
 
 class Sunflower : public Plant
 {
 private:
-	 sf::Clock cooldown;
+	Sun suns[100]; // Array of suns
+	sf::Clock clock;
+	float sunSpawnInterval; 
+	void spawnSun(); // Interval between spawning suns
 public:
 	Sunflower();
 	void generateSun();
@@ -21,5 +25,7 @@ public:
 	bool needToAttack(bool a);
 	int getCost();
 	void setCost(int c);
+	//void update(float deltaTime);
+	//void draw(sf::RenderWindow& window);
 };
 

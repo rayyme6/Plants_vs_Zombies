@@ -1,5 +1,4 @@
-﻿#include <iostream>
-#include <SFML/Graphics.hpp>
+﻿#include <SFML/Graphics.hpp>
 #include <ctime>
 #include <cstdlib>
 #include <string>
@@ -10,6 +9,7 @@
 #include "Peashooter.h"
 #include "Plant_Factory.h"
 #include "ZombieFactory.h"
+#include "Game.h"
 
 using namespace sf;
 using namespace std;
@@ -23,9 +23,9 @@ void createBack(RenderWindow& window);
 void createMap(RenderWindow& window);
 void handleMenu(RenderWindow& window, Sprite& menuSprite, Font& font, string& currentGameState);
 void handleInstructions(RenderWindow& window, Sprite& instSprite, Font& font, string& currentGameState);
-void handleGameplay(RenderWindow& window, Plant_Factory& plantFactory, ZombieFactory& zombieFactory, Peashooter& pee, Plant* plants[5][9], bool FIELD_GAME_STATUS[5][9], Zombie* zombies[], int& zombiesGenerated, const int MAX_ZOMBIES, float& time, float zombieGenerationInterval, sf::Clock& zombieClock, Coordinates peashooterPositions[], int& numPeashooters, const int MAX_PEASHOOTERS, int& lives, string& currentGameState);
-void handlePause(RenderWindow& window, Font& font, string& currentGameState);
-void handleHighScores(RenderWindow& window);
+void handleGameplay(RenderWindow& window, Plant_Factory& plantFactory, ZombieFactory& zombieFactory, Peashooter& pee, Plant* plants[5][9], bool FIELD_GAME_STATUS[5][9], Zombie* zombies[], int& zombiesGenerated, const int MAX_ZOMBIES, float& time, float zombieGenerationInterval, sf::Clock& zombieClock, Coordinates peashooterPositions[], int& numPeashooters, const int MAX_PEASHOOTERS, int& lives, string& currentGameState, Game& game, Sprite& pauseSprite, Sprite& highScoresButtonSprite);
+void handlePause(RenderWindow& window, Font& font, string& currentGameState, Sprite& pauseSprite, Sprite& pauseBackgroundSprite);
+void handleHighScores(RenderWindow& window, Sprite& high, string& currentGameState);
 void handleEnd(RenderWindow& window, Font& font, Sprite& overSprite);
 
 Font font;
@@ -34,6 +34,7 @@ int main() {
     Plant_Factory plantFactory;
     ZombieFactory zombieFactory;
     Peashooter pee;
+    Game game;
 
     std::srand(static_cast<unsigned int>(std::time(0)));
 
@@ -41,60 +42,100 @@ int main() {
     RenderWindow window(VideoMode(1200, 700), "Plants vs Zombies");
 
     // Load font
-    if (!font.loadFromFile("arial.ttf")) {
-        //cerr << "Failed to load font" << endl;
-       // return -1;
+    if (!font.loadFromFile("../Images/arial.ttf")) {
+        cerr << "Failed to load font" << endl;
+        return -1;
     }
-    if (!font.loadFromFile("BLOOD.ttf")) {
+    if (!font.loadFromFile("../Images/BLOOD.ttf")) {
         cerr << "Failed to load BLOOD font" << endl;
-        // return -1;
+        return -1;
     }
 
     // Load menu image
     Texture menuTexture;
-    if (!menuTexture.loadFromFile("Images/lol.jpeg")) { // Replace with your image path
+    if (!menuTexture.loadFromFile("../Images/lol.jpeg")) {
         cerr << "Failed to load menu image" << endl;
-        //  return -1;
+        return -1;
     }
     Sprite menuSprite(menuTexture);
     menuSprite.setScale(1.69f, 1.69f);
 
     // Load instructions image
     Texture instTexture;
-    if (!instTexture.loadFromFile("Images/inst.jpg")) { // Replace with your image path
+    if (!instTexture.loadFromFile("../Images/inst.jpg")) {
         cerr << "Failed to load instructions image" << endl;
-        // return -1;
+        return -1;
     }
     Sprite instSprite(instTexture);
 
-
+    // Load game over image
     Texture overTexture;
-    if (!overTexture.loadFromFile("Images/gameoverfinal.jpeg")) { // Replace with your image path
-        cerr << "Failed to load instructions image" << endl;
-        // return -1;
+    if (!overTexture.loadFromFile("../Images/gameoverfinal.jpeg")) {
+        cerr << "Failed to load game over image" << endl;
+        return -1;
     }
     Sprite overSprite(overTexture);
 
+    // Load pause button image
+    Texture pauseTexture;
+    if (!pauseTexture.loadFromFile("../Images/pausesprite.jpg")) {
+        cerr << "Failed to load pause button image" << endl;
+        return -1;
+    }
+    Sprite pauseSprite(pauseTexture);
+    pauseSprite.setPosition(1100, 20);
+    pauseSprite.setScale(0.3f, 0.3f);
+
+    // Load pause background image
+    Texture pauseBackgroundTexture;
+    if (!pauseBackgroundTexture.loadFromFile("../Images/pause.jpg")) {
+        cerr << "Failed to load pause background image" << endl;
+        return -1;
+    }
+    Sprite pauseBackgroundSprite(pauseBackgroundTexture);
+    pauseBackgroundSprite.setPosition(0, 0);
+    pauseBackgroundSprite.setScale(2.6f, 2.2f);
+
+    // Load high scores button image
+    Texture highScoresButtonTexture;
+    if (!highScoresButtonTexture.loadFromFile("../Images/high.jpg")) {
+        cerr << "Failed to load high scores button image" << endl;
+        return -1;
+    }
+    Sprite highScoresButtonSprite(highScoresButtonTexture);
+    highScoresButtonSprite.setPosition(1100, 100);
+    highScoresButtonSprite.setScale(0.6f, 0.6f);
+
+    // Load high scores background image
+    Texture highTexture;
+    if (!highTexture.loadFromFile("../Images/score.jpg")) {
+        cerr << "Failed to load high scores background image" << endl;
+        return -1;
+    }
+    Sprite high(highTexture);
+    high.setPosition(1100, 100);
+    high.setScale(0.6f, 0.6f);
+
     // Game icon
     Image icon;
-    if (icon.loadFromFile("Images/icon.png")) {
+    if (icon.loadFromFile("../Images/extra.png")) {
         window.setIcon(32, 32, icon.getPixelsPtr());
     }
     else {
-        std::cerr << "Failed to load icon" << std::endl;
+        cerr << "Failed to load icon" << endl;
     }
     window.setFramerateLimit(60);
 
-    const int MAX_ZOMBIES = 10; // Maximum zombies
+    const int MAX_ZOMBIES = 10;
     int zombiesGenerated = 0;
-    sf::Clock zombieClock; // Clock for managing zombie generation
-    float zombieGenerationInterval = 2.0f; // Interval between zombie generations
+    sf::Clock zombieClock;
+    float zombieGenerationInterval = 2.0f;
 
     const int ROWS = 5;
     const int COLS = 9;
     bool FIELD_GAME_STATUS[ROWS][COLS];
-    Plant* plants[ROWS][COLS]; // Array for plants
-    Zombie* zombies[MAX_ZOMBIES] = { nullptr }; // Fixed-size array for zombies
+    Plant* plants[ROWS][COLS];
+    Zombie* zombies[MAX_ZOMBIES] = { nullptr };
 
     for (int i = 0; i < ROWS; i++) {
         for (int j = 0; j < COLS; j++) {
@@ -103,8 +144,6 @@ int main() {
     }
 
     Clock clock;
-
-    sf::FloatRect clickArea(0, 0, 1200, 700);
     Coordinates peashooterPositions[10];
     int numPeashooters = 0;
     int lives = 3;
@@ -118,20 +157,29 @@ int main() {
 
         Event event;
         while (window.pollEvent(event)) {
+
+            if (event.type == Event::MouseButtonPressed) {
+                float mouseX = static_cast<float>(Mouse::getPosition(window).x);
+                float mouseY = static_cast<float>(Mouse::getPosition(window).y);
+
+                // Handle pause button click
+                if (pauseSprite.getGlobalBounds().contains(mouseX, mouseY) && currentGameState == "GAMEPLAY") {
+                    currentGameState = "PAUSE";
+                }
+
+                // Handle high scores button click
+                if (highScoresButtonSprite.getGlobalBounds().contains(mouseX, mouseY) && currentGameState == "GAMEPLAY") {
+                    currentGameState = "HIGH_SCORES";
+                }
+
+                // Handle sun collection
+                game.handleSunCollection(mouseX, mouseY);
+            }
             if (event.type == Event::Closed) {
                 window.close();
             }
 
-            if (event.type == Event::KeyPressed) {
-                if (event.key.code == Keyboard::Escape) {
-                    if (currentGameState == "GAMEPLAY") {
-                        currentGameState = "PAUSE";
-                    }
-                    else if (currentGameState == "PAUSE") {
-                        currentGameState = "GAMEPLAY";
-                    }
-                }
-            }
+
         }
 
         if (currentGameState == "MENU") {
@@ -141,13 +189,13 @@ int main() {
             handleInstructions(window, instSprite, font, currentGameState);
         }
         else if (currentGameState == "GAMEPLAY") {
-            handleGameplay(window, plantFactory, zombieFactory, pee, plants, FIELD_GAME_STATUS, zombies, zombiesGenerated, MAX_ZOMBIES, time, zombieGenerationInterval, zombieClock, peashooterPositions, numPeashooters, 10, lives, currentGameState);
+            handleGameplay(window, plantFactory, zombieFactory, pee, plants, FIELD_GAME_STATUS, zombies, zombiesGenerated, MAX_ZOMBIES, time, zombieGenerationInterval, zombieClock, peashooterPositions, numPeashooters, 10, lives, currentGameState, game, pauseSprite, highScoresButtonSprite);
         }
         else if (currentGameState == "PAUSE") {
-            handlePause(window, font, currentGameState);
+            handlePause(window, font, currentGameState, pauseSprite, pauseBackgroundSprite);
         }
         else if (currentGameState == "HIGH_SCORES") {
-            handleHighScores(window);
+            handleHighScores(window, high, currentGameState);
         }
         else if (currentGameState == "END") {
             handleEnd(window, font, overSprite);
@@ -175,7 +223,6 @@ void handleMenu(RenderWindow& window, Sprite& menuSprite, Font& font, string& cu
     startGame.setFillColor(Color::Red);
     window.draw(startGame);
 
-
     Text instructions("Instructions", font, 50);
     instructions.setPosition(490, 430);
     instructions.setFillColor(Color::Red);
@@ -187,7 +234,6 @@ void handleMenu(RenderWindow& window, Sprite& menuSprite, Font& font, string& cu
     Event event;
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::MouseButtonPressed) {
-            // Get the mouse position directly
             float mouseX = static_cast<float>(Mouse::getPosition(window).x);
             float mouseY = static_cast<float>(Mouse::getPosition(window).y);
 
@@ -206,22 +252,19 @@ void handleInstructions(RenderWindow& window, Sprite& instSprite, Font& font, st
     window.draw(instSprite);
     Text instructions("Instructions", font, 50);
     instructions.setPosition(800, 230);
-    instructions.setFillColor(Color::White); // Change color to white
+    instructions.setFillColor(Color::White);
     window.draw(instructions);
 
-    // Add a back button
     Text back("Back", font, 70);
     back.setPosition(950, 280);
-    back.setFillColor(Color::Red); // Change color to red
+    back.setFillColor(Color::Red);
     window.draw(back);
 
     window.display();
 
-    // Event handling for button clicks
     Event event;
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::MouseButtonPressed) {
-            // Get the mouse position directly
             float mouseX = static_cast<float>(Mouse::getPosition(window).x);
             float mouseY = static_cast<float>(Mouse::getPosition(window).y);
 
@@ -232,13 +275,16 @@ void handleInstructions(RenderWindow& window, Sprite& instSprite, Font& font, st
     }
 }
 
-void handleGameplay(RenderWindow& window, Plant_Factory& plantFactory, ZombieFactory& zombieFactory, Peashooter& pee, Plant* plants[5][9], bool FIELD_GAME_STATUS[5][9], Zombie* zombies[], int& zombiesGenerated, const int MAX_ZOMBIES, float& time, float zombieGenerationInterval, sf::Clock& zombieClock, Coordinates peashooterPositions[], int& numPeashooters, const int MAX_PEASHOOTERS, int& lives, string& currentGameState) {
+void handleGameplay(RenderWindow& window, Plant_Factory& plantFactory, ZombieFactory& zombieFactory, Peashooter& pee, Plant* plants[5][9], bool FIELD_GAME_STATUS[5][9], Zombie* zombies[], int& zombiesGenerated, const int MAX_ZOMBIES, float& time, float zombieGenerationInterval, sf::Clock& zombieClock, Coordinates peashooterPositions[], int& numPeashooters, const int MAX_PEASHOOTERS, int& lives, string& currentGameState, Game& game, Sprite& pauseSprite, Sprite& highScoresButtonSprite) {
+
+
+    createBack(window);
+    createMap(window);
     Event event;
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed) {
             window.close();
         }
-
         if (event.type == sf::Event::MouseButtonPressed) {
             int row = (event.mouseButton.y - 80) / 108;
             int col = (event.mouseButton.x - 200) / 108;
@@ -259,10 +305,6 @@ void handleGameplay(RenderWindow& window, Plant_Factory& plantFactory, ZombieFac
             }
         }
     }
-
-    createBack(window);
-    createMap(window);
-
     for (int i = 0; i < numPeashooters; ++i) {
         pee.spawnPeashooter(peashooterPositions[i].x, peashooterPositions[i].y);
         pee.drawPeashooter(window);
@@ -287,7 +329,6 @@ void handleGameplay(RenderWindow& window, Plant_Factory& plantFactory, ZombieFac
                     zombies[i] = zombieFactory.newDancingZombie();
                     break;
                 }
-                // Set the initial position of the zombie in the specified row
                 zombies[i]->setPosition(1200, randomRow * 100 + 80);
                 zombiesGenerated++;
                 break;
@@ -300,7 +341,6 @@ void handleGameplay(RenderWindow& window, Plant_Factory& plantFactory, ZombieFac
         if (zombies[i]) {
             zombies[i]->move();
             zombies[i]->update(window, time);
-            // Check if zombie reaches the end
             if (zombies[i]->getXPosition() <= 0) {
                 delete zombies[i];
                 zombies[i] = nullptr;
@@ -312,27 +352,31 @@ void handleGameplay(RenderWindow& window, Plant_Factory& plantFactory, ZombieFac
         }
     }
 
+    game.updateSuns(time, window);
+    game.drawSuns(window);
+
+    window.draw(pauseSprite);
+    window.draw(highScoresButtonSprite);
     window.display();
 }
 
-void handlePause(RenderWindow& window, Font& font, string& currentGameState) {
+void handleHighScores(RenderWindow& window, Sprite& high, string& currentGameState) {
     window.clear(Color::Black);
-    Text pause("Pause", font, 50);
-    pause.setPosition(100, 100);
-    window.draw(pause);
-
-    // Add resume button
-    Text resume("Resume", font, 30);
-    resume.setPosition(100, 200);
+    Text highScores("High Scores", font, 50);
+    highScores.setPosition(100, 100);
+    window.draw(highScores);
+    window.draw(high);
+    high.setPosition(0, 0);
+    high.setScale(2.58f, 2.59f);
+    Text resume("Resume", font, 60);
+    resume.setPosition(100, 150);
+    resume.setFillColor(Color::Red);
     window.draw(resume);
-
     window.display();
 
-    // Event handling for button clicks
     Event event;
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::MouseButtonPressed) {
-            // Get the mouse position directly
             float mouseX = static_cast<float>(Mouse::getPosition(window).x);
             float mouseY = static_cast<float>(Mouse::getPosition(window).y);
 
@@ -343,16 +387,36 @@ void handlePause(RenderWindow& window, Font& font, string& currentGameState) {
     }
 }
 
-void handleHighScores(RenderWindow& window) {
+void handlePause(RenderWindow& window, Font& font, string& currentGameState, Sprite& pauseSprite, Sprite& pauseBackgroundSprite) {
     window.clear(Color::Black);
-    Text highScores("High Scores", font, 50);
-    highScores.setPosition(100, 100);
-    window.draw(highScores);
+    Text pause("Pause", font, 50);
+    pause.setPosition(-100, -100);
+    pause.setFillColor(Color::White);
+    window.draw(pauseSprite);
+    window.draw(pauseBackgroundSprite);
+    window.draw(pause);
+
+    Text resume("Resume Game", font, 36);
+    resume.setPosition(511, 540);
+    resume.setFillColor(Color::Green);
+    window.draw(resume);
+
     window.display();
+
+    Event event;
+    while (window.pollEvent(event)) {
+        if (event.type == sf::Event::MouseButtonPressed) {
+            float mouseX = static_cast<float>(Mouse::getPosition(window).x);
+            float mouseY = static_cast<float>(Mouse::getPosition(window).y);
+
+            if (resume.getGlobalBounds().contains(mouseX, mouseY)) {
+                currentGameState = "GAMEPLAY";
+            }
+        }
+    }
 }
 
 void handleEnd(RenderWindow& window, Font& font, Sprite& overSprite) {
-    //  window.clear(Color::Black);
     Text end("Game Over", font, 100);
     end.setPosition(100, 100);
     end.setFillColor(Color::White);
@@ -361,17 +425,17 @@ void handleEnd(RenderWindow& window, Font& font, Sprite& overSprite) {
 }
 
 void createBack(RenderWindow& window) {
-    Image map_image;
-    if (map_image.loadFromFile("Images/backwindow.jpg")) {
+    Image mapImage;
+    if (mapImage.loadFromFile("../Images/finalgrid.JPEG")) {
         Texture map;
-        map.loadFromImage(map_image);
-        Sprite s_map;
-        s_map.setTexture(map);
-        s_map.setPosition(0, 0);
-        window.draw(s_map);
+        map.loadFromImage(mapImage);
+        Sprite sMap;
+        sMap.setTexture(map);
+        sMap.setPosition(0, 0);
+        window.draw(sMap);
     }
     else {
-        std::cerr << "Failed to load background image" << std::endl;
+        cerr << "Failed to load background image" << endl;
     }
 }
 

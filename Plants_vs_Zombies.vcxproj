@@ -159,6 +159,7 @@
     <ClCompile Include="SimpleZombie.cpp" />
     <ClCompile Include="SnowPea.cpp" />
     <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Sun.cpp" />
     <ClCompile Include="Sunflower.cpp" />
     <ClCompile Include="SunflowerFields.cpp" />
     <ClCompile Include="Time.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="ScoreBoard.h" />
     <ClInclude Include="SimpleZombie.h" />
     <ClInclude Include="SnowPea.h" />
+    <ClInclude Include="Sun.h" />
     <ClInclude Include="Sunflower.h" />
     <ClInclude Include="SunflowerFields.h" />
     <ClInclude Include="Time.h" />
