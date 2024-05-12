@@ -1,7 +1,7 @@
 #include "Sun.h"
 
 Sun::Sun() : speed(100.0f) {
-    if (!sunTexture.loadFromFile("../Images/sun.jpg")) {
+    if (!sunTexture.loadFromFile("Images/sun.png")) {
         std::cerr << "Failed to load sun image" << std::endl;
     }
     sunSprite.setTexture(sunTexture);

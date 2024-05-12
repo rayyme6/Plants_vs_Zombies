@@ -78,7 +78,7 @@ int main() {
 
     // Load pause button image
     Texture pauseTexture;
-    if (!pauseTexture.loadFromFile("Images/pausebutton.jpg")) {
+    if (!pauseTexture.loadFromFile("Images/pausebutton.png")) {
         cerr << "Failed to load pause button image" << endl;
         return -1;
     }
@@ -134,23 +134,26 @@ int main() {
     const int ROWS = 5;
     const int COLS = 9;
     bool FIELD_GAME_STATUS[ROWS][COLS];
-    Plant* plants[ROWS][COLS];
-    Zombie* zombies[MAX_ZOMBIES] = { nullptr };
+    Plant* plants[ROWS][COLS]; // Array for plants
+    Zombie* zombies[MAX_ZOMBIES] = { nullptr }; // Fixed-size array for zombies
 
     for (int i = 0; i < ROWS; i++) {
         for (int j = 0; j < COLS; j++) {
             FIELD_GAME_STATUS[i][j] = true;
         }
     }
-
     Clock clock;
+
+    sf::FloatRect clickArea(0, 0, 1200, 700);
     Coordinates peashooterPositions[10];
     int numPeashooters = 0;
     int lives = 3;
 
     string currentGameState = "MENU";
 
-    while (window.isOpen()) {
+
+    while (window.isOpen())
+    {
         float time = clock.getElapsedTime().asMicroseconds();
         clock.restart();
         time = time / 800;
@@ -162,15 +165,7 @@ int main() {
                 float mouseX = static_cast<float>(Mouse::getPosition(window).x);
                 float mouseY = static_cast<float>(Mouse::getPosition(window).y);
 
-                // Handle pause button click
-                if (pauseSprite.getGlobalBounds().contains(mouseX, mouseY) && currentGameState == "GAMEPLAY") {
-                    currentGameState = "PAUSE";
-                }
 
-                // Handle high scores button click
-                if (highScoresButtonSprite.getGlobalBounds().contains(mouseX, mouseY) && currentGameState == "GAMEPLAY") {
-                    currentGameState = "HIGH_SCORES";
-                }
 
                 // Handle sun collection
                 game.handleSunCollection(mouseX, mouseY);
@@ -285,9 +280,46 @@ void handleGameplay(RenderWindow& window, Plant_Factory& plantFactory, ZombieFac
         if (event.type == sf::Event::Closed) {
             window.close();
         }
+        if (event.type == sf::Event::KeyPressed)
+        {
+            if (event.key.code == sf::Keyboard::Space) {
+                if (currentGameState == "GAMEPLAY") {
+                    currentGameState = "PAUSE";
+                }
+                /* else if (currentGameState == "PAUSE") {
+                     currentGameState = "GAMEPLAY";
+                 }*/
+                return; // Exit the function to prevent further processing
+            }
+        }
+        //if (event.type == sf::Event::KeyPressed) {
+        //    if (event.key.code == sf::Keyboard::Space) {
+        //        if (currentGameState == "GAMEPLAY") {
+        //            currentGameState = "PAUSE";
+        //        }
+        //        else if (currentGameState == "PAUSE") {
+        //            currentGameState = "GAMEPLAY";
+        //        }
+        //        return; // Exit the function to prevent further processing
+        //    }
+        //}
+         // Handle pause button click
+        if (event.type == Event::MouseButtonPressed)
+        {
+            float mouseX = static_cast<float>(Mouse::getPosition(window).x);
+            float mouseY = static_cast<float>(Mouse::getPosition(window).y);
+            if (pauseSprite.getGlobalBounds().contains(mouseX, mouseY) && currentGameState == "GAMEPLAY") {
+                currentGameState = "PAUSE";
+            }
+
+            // Handle high scores button click
+            if (highScoresButtonSprite.getGlobalBounds().contains(mouseX, mouseY) && currentGameState == "GAMEPLAY") {
+                currentGameState = "HIGH_SCORES";
+            }
+        }
         if (event.type == sf::Event::MouseButtonPressed) {
-            int row = (event.mouseButton.y - 80) / 108;
-            int col = (event.mouseButton.x - 200) / 108;
+            int row = (event.mouseButton.y - 80) / 100; // Adjusted grid cell size for rows
+            int col = (event.mouseButton.x - 250) / 80; // Adjusted grid cell size for columns
 
             if (row >= 0 && row < 5 && col >= 0 && col < 9 && FIELD_GAME_STATUS[row][col]) {
                 plants[row][col] = plantFactory.newPeashooter();
